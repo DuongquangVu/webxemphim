@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hệ Thống Rạp - CinemaBooking</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Cinema Page Specific Styles */
+      .cinema-page {
+        padding: 40px 0;
+        min-height: calc(100vh - 70px);
+      }
+
+      .search-section {
+        background: var(--bg-secondary);
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 40px;
+        border: 1px solid var(--border-color);
+      }
+
+      .search-form {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .search-input-group {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+      }
+
+      .search-input-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 14px 14px 14px 45px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+      }
+
+      .search-input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .city-filter {
+        min-width: 200px;
+      }
+
+      .city-filter select {
+        width: 100%;
+        padding: 14px 40px 14px 15px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+      }
+
+      .city-filter select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+      }
+
+      .cinema-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+      }
+
+      .cinema-card {
+        background: var(--bg-secondary);
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .cinema-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent-color);
+        box-shadow: 0 10px 40px rgba(56, 189, 248, 0.15);
+      }
+
+      .cinema-card.active {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 2px var(--accent-color);
+      }
+
+      .cinema-header {
+        padding: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-color) 0%,
+          #0ea5e9 100%
+        );
+      }
+
+      .cinema-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 5px;
+      }
+
+      .cinema-city {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+      }
+
+      .cinema-body {
+        padding: 20px;
+      }
+
+      .cinema-info {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .cinema-info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      .cinema-info-item i {
+        color: var(--accent-color);
+        width: 20px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .cinema-stats {
+        display: flex;
+        gap: 20px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .cinema-stat {
+        text-align: center;
+        flex: 1;
+      }
+
+      .cinema-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent-color);
+      }
+
+      .cinema-stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      /* Movies at Cinema Section */
+      .cinema-movies-section {
+        margin-top: 50px;
+        display: none;
+      }
+
+      .cinema-movies-section.active {
+        display: block;
+      }
+
+      .cinema-movies-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .cinema-movies-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .cinema-movies-title i {
+        color: var(--accent-color);
+        margin-right: 10px;
+      }
+
+      .close-movies-btn {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .close-movies-btn:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+      }
+
+      .movies-at-cinema {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+      }
+
+      .movie-showtime-card {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+      }
+
+      .movie-showtime-card:hover {
+        border-color: var(--accent-color);
+      }
+
+      .movie-showtime-poster {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+      }
+
+      .movie-showtime-poster img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .movie-showtime-rating {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 5px 10px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .movie-showtime-rating i {
+        color: #fbbf24;
+      }
+
+      .movie-showtime-rating span {
+        color: white;
+        font-weight: 600;
+      }
+
+      .movie-showtime-info {
+        padding: 15px;
+      }
+
+      .movie-showtime-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .movie-showtime-meta {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 12px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      .movie-showtime-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .showtimes-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .showtime-btn {
+        padding: 8px 14px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+      }
+
+      .showtime-btn:hover {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+      }
+
+      .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+      }
+
+      .empty-state h3 {
+        font-size: 1.3rem;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+      }
+
+      /* Loading */
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 60px;
+      }
+
+      .loading-spinner i {
+        font-size: 2rem;
+        color: var(--accent-color);
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .search-form {
+          flex-direction: column;
+        }
+
+        .search-input-group,
+        .city-filter {
+          min-width: 100%;
+        }
+
+        .cinema-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .movies-at-cinema {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo">
+          <i class="fas fa-film"></i>
+          <span>CinemaBooking</span>
+        </a>
+        <nav class="nav">
+          <a href="/" class="nav-link">Trang chủ</a>
+          <a href="/movies.html" class="nav-link">Phim</a>
+          <a href="/cinemas.html" class="nav-link active">Rạp</a>
+        </nav>
+        <div class="auth-buttons" id="authButtons">
+          <button class="btn btn-outline" onclick="showLoginModal()">
+            Đăng nhập
+          </button>
+          <button class="btn btn-primary" onclick="showRegisterModal()">
+            Đăng ký
+          </button>
+        </div>
+        <div class="user-menu hidden" id="userMenu">
+          <span class="user-name" id="userName"></span>
+          <div class="dropdown">
+            <button class="dropdown-toggle">
+              <i class="fas fa-user-circle"></i>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a href="/profile.html"><i class="fas fa-user"></i> Tài khoản</a>
+              <a href="/bookings.html"
+                ><i class="fas fa-ticket-alt"></i> Lịch sử đặt vé</a
+              >
+              <a href="#" onclick="logout()"
+                ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="cinema-page">
+      <div class="container">
+        <!-- Page Title -->
+        <div class="section-header" style="margin-bottom: 30px">
+          <h1 class="section-title">
+            <i class="fas fa-building"></i> Hệ Thống Rạp Chiếu Phim
+          </h1>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+          <div class="search-form">
+            <div class="search-input-group">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Tìm kiếm rạp hoặc phim..."
+              />
+            </div>
+            <div class="city-filter">
+              <select id="cityFilter">
+                <option value="">Tất cả thành phố</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cinema Grid -->
+        <div id="cinemaGrid" class="cinema-grid">
+          <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+          </div>
+        </div>
+
+        <!-- Movies at Cinema Section -->
+        <div id="cinemaMoviesSection" class="cinema-movies-section">
+          <div class="cinema-movies-header">
+            <h2 class="cinema-movies-title">
+              <i class="fas fa-film"></i>
+              <span id="selectedCinemaName">Phim đang chiếu</span>
+            </h2>
+            <button class="close-movies-btn" onclick="closeCinemaMovies()">
+              <i class="fas fa-times"></i> Đóng
+            </button>
+          </div>
+          <div id="moviesAtCinema" class="movies-at-cinema">
+            <!-- Movies will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3><i class="fas fa-film"></i> CinemaBooking</h3>
+            <p>Hệ thống đặt vé xem phim trực tuyến hàng đầu Việt Nam</p>
+          </div>
+          <div class="footer-section">
+            <h4>Liên kết</h4>
+            <a href="/">Trang chủ</a>
+            <a href="/movies.html">Phim</a>
+            <a href="/cinemas.html">Rạp</a>
+          </div>
+          <div class="footer-section">
+            <h4>Hỗ trợ</h4>
+            <a href="#">FAQ</a>
+            <a href="#">Liên hệ</a>
+            <a href="#">Điều khoản</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 CinemaBooking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-sign-in-alt"></i> Đăng Nhập</h2>
+          <button class="modal-close" onclick="closeModal('loginModal')">
+            &times;
+          </button>
+        </div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              required
+              placeholder="Nhập email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Mật khẩu</label>
+            <input
+              type="password"
+              id="loginPassword"
+              required
+              placeholder="Nhập mật khẩu"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            Đăng Nhập
+          </button>
+        </form>
+        <p class="modal-footer-text">
+          Chưa có tài khoản?
+          <a href="#" onclick="switchModal('loginModal', 'registerModal')"
+            >Đăng ký ngay</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-user-plus"></i> Đăng Ký</h2>
+          <button class="modal-close" onclick="closeModal('registerModal')">
+            &times;
+          </button>
+        </div>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label for="registerName">Họ tên</label>
+            <input
+              type="text"
+              id="registerName"
+              required
+              placeholder="Nhập họ tên"
+            />
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">Email</label>
+            <input
+              type="email"
+              id="registerEmail"
+              required
+              placeholder="Nhập email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="registerPhone">Số điện thoại</label>
+            <input
+              type="tel"
+              id="registerPhone"
+              required
+              placeholder="Nhập số điện thoại"
+            />
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Mật khẩu</label>
+            <input
+              type="password"
+              id="registerPassword"
+              required
+              minlength="6"
+              placeholder="Nhập mật khẩu"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            Đăng Ký
+          </button>
+        </form>
+        <p class="modal-footer-text">
+          Đã có tài khoản?
+          <a href="#" onclick="switchModal('registerModal', 'loginModal')"
+            >Đăng nhập</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+      // Global variables
+      let allCinemas = [];
+      let allCities = [];
+      let selectedCinemaId = null;
+
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", () => {
+        updateAuthUI();
+        loadCinemas();
+        loadCities();
+        setupSearch();
+      });
+
+      // Load all cinemas
+      async function loadCinemas() {
+        try {
+          const response = await CinemasAPI.getAll();
+          if (response.success) {
+            allCinemas = response.data;
+            renderCinemas(allCinemas);
+          }
+        } catch (error) {
+          console.error("Error loading cinemas:", error);
+          showToast("Không thể tải danh sách rạp!", "error");
+        }
+      }
+
+      // Load cities
+      async function loadCities() {
+        try {
+          const response = await CinemasAPI.getCities();
+          if (response.success) {
+            allCities = response.data;
+            renderCityFilter();
+          }
+        } catch (error) {
+          console.error("Error loading cities:", error);
+        }
+      }
+
+      // Render city filter
+      function renderCityFilter() {
+        const cityFilter = document.getElementById("cityFilter");
+        cityFilter.innerHTML = '<option value="">Tất cả thành phố</option>';
+
+        allCities.forEach((city) => {
+          cityFilter.innerHTML += `<option value="${city.city}">${city.city} (${city.cinema_count} rạp)</option>`;
+        });
+      }
+
+      // Render cinemas
+      function renderCinemas(cinemas) {
+        const grid = document.getElementById("cinemaGrid");
+
+        if (cinemas.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <i class="fas fa-building"></i>
+              <h3>Không tìm thấy rạp</h3>
+              <p>Thử thay đổi từ khóa tìm kiếm</p>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = cinemas
+          .map(
+            (cinema) => `
+          <div class="cinema-card ${
+            selectedCinemaId === cinema.id ? "active" : ""
+          }" 
+               onclick="selectCinema(${cinema.id}, '${cinema.name.replace(
+              /'/g,
+              "\\'"
+            )}')">
+            <div class="cinema-header">
+              <h3 class="cinema-name">${cinema.name}</h3>
+              <p class="cinema-city"><i class="fas fa-map-marker-alt"></i> ${
+                cinema.city
+              }</p>
+            </div>
+            <div class="cinema-body">
+              <div class="cinema-info">
+                <div class="cinema-info-item">
+                  <i class="fas fa-location-dot"></i>
+                  <span>${cinema.address}</span>
+                </div>
+                <div class="cinema-info-item">
+                  <i class="fas fa-phone"></i>
+                  <span>${cinema.phone || "Chưa cập nhật"}</span>
+                </div>
+              </div>
+              <div class="cinema-stats">
+                <div class="cinema-stat">
+                  <div class="cinema-stat-value">${cinema.room_count || 0}</div>
+                  <div class="cinema-stat-label">Phòng chiếu</div>
+                </div>
+                <div class="cinema-stat">
+                  <div class="cinema-stat-value">${
+                    cinema.total_seats || 0
+                  }</div>
+                  <div class="cinema-stat-label">Ghế ngồi</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+          )
+          .join("");
+      }
+
+      // Setup search
+      function setupSearch() {
+        const searchInput = document.getElementById("searchInput");
+        const cityFilter = document.getElementById("cityFilter");
+
+        let searchTimeout;
+
+        searchInput.addEventListener("input", (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            filterCinemas();
+          }, 300);
+        });
+
+        cityFilter.addEventListener("change", () => {
+          filterCinemas();
+        });
+      }
+
+      // Filter cinemas
+      function filterCinemas() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const selectedCity = document.getElementById("cityFilter").value;
+
+        let filtered = allCinemas;
+
+        // Filter by city
+        if (selectedCity) {
+          filtered = filtered.filter((c) => c.city === selectedCity);
+        }
+
+        // Filter by search term (cinema name or address)
+        if (searchTerm) {
+          filtered = filtered.filter(
+            (c) =>
+              c.name.toLowerCase().includes(searchTerm) ||
+              c.address.toLowerCase().includes(searchTerm) ||
+              c.city.toLowerCase().includes(searchTerm)
+          );
+        }
+
+        renderCinemas(filtered);
+      }
+
+      // Select cinema and show movies
+      async function selectCinema(cinemaId, cinemaName) {
+        selectedCinemaId = cinemaId;
+
+        // Update active state
+        document.querySelectorAll(".cinema-card").forEach((card) => {
+          card.classList.remove("active");
+        });
+        event.currentTarget.classList.add("active");
+
+        // Update section title
+        document.getElementById(
+          "selectedCinemaName"
+        ).textContent = `Phim đang chiếu tại ${cinemaName}`;
+
+        // Show movies section
+        const moviesSection = document.getElementById("cinemaMoviesSection");
+        moviesSection.classList.add("active");
+
+        // Load movies
+        await loadMoviesAtCinema(cinemaId);
+
+        // Scroll to movies section
+        moviesSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      // Load movies at cinema
+      async function loadMoviesAtCinema(cinemaId) {
+        const container = document.getElementById("moviesAtCinema");
+        container.innerHTML = `
+          <div class="loading-spinner" style="grid-column: 1/-1;">
+            <i class="fas fa-spinner"></i>
+          </div>
+        `;
+
+        try {
+          // Get today's date
+          const today = new Date().toISOString().split("T")[0];
+
+          const response = await ShowtimesAPI.getByCinema(cinemaId, today);
+
+          if (response.success && response.data && response.data.length > 0) {
+            // Group showtimes by movie
+            const movieMap = new Map();
+
+            response.data.forEach((showtime) => {
+              if (!movieMap.has(showtime.movie_id)) {
+                movieMap.set(showtime.movie_id, {
+                  id: showtime.movie_id,
+                  title: showtime.movie_title,
+                  poster_url: showtime.poster_url,
+                  duration: showtime.duration,
+                  genre: showtime.genre,
+                  rating: showtime.rating,
+                  showtimes: [],
+                });
+              }
+
+              movieMap.get(showtime.movie_id).showtimes.push({
+                id: showtime.id,
+                start_time: showtime.start_time,
+                room_name: showtime.room_name,
+              });
+            });
+
+            const movies = Array.from(movieMap.values());
+            renderMoviesAtCinema(movies);
+          } else {
+            container.innerHTML = `
+              <div class="empty-state" style="grid-column: 1/-1;">
+                <i class="fas fa-film"></i>
+                <h3>Chưa có lịch chiếu</h3>
+                <p>Rạp này chưa có lịch chiếu cho hôm nay</p>
+              </div>
+            `;
+          }
+        } catch (error) {
+          console.error("Error loading movies:", error);
+          container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <i class="fas fa-exclamation-circle"></i>
+              <h3>Không thể tải dữ liệu</h3>
+              <p>Vui lòng thử lại sau</p>
+            </div>
+          `;
+        }
+      }
+
+      // Render movies at cinema
+      function renderMoviesAtCinema(movies) {
+        const container = document.getElementById("moviesAtCinema");
+
+        container.innerHTML = movies
+          .map(
+            (movie) => `
+          <div class="movie-showtime-card">
+            <div class="movie-showtime-poster">
+              <img src="${movie.poster_url || "/images/no-poster.jpg"}" 
+                   alt="${movie.title}"
+                   onerror="this.src='/images/no-poster.jpg'">
+              <div class="movie-showtime-rating">
+                <i class="fas fa-star"></i>
+                <span>${movie.rating || "N/A"}</span>
+              </div>
+            </div>
+            <div class="movie-showtime-info">
+              <h3 class="movie-showtime-title" title="${movie.title}">${
+              movie.title
+            }</h3>
+              <div class="movie-showtime-meta">
+                <span><i class="fas fa-clock"></i> ${movie.duration} phút</span>
+                <span><i class="fas fa-tags"></i> ${movie.genre || "N/A"}</span>
+              </div>
+              <div class="showtimes-list">
+                ${movie.showtimes
+                  .map((st) => {
+                    const time = new Date(st.start_time);
+                    const timeStr = time.toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    return `<a href="/booking.html?showtime=${st.id}" class="showtime-btn" title="${st.room_name}">${timeStr}</a>`;
+                  })
+                  .join("")}
+              </div>
+            </div>
+          </div>
+        `
+          )
+          .join("");
+      }
+
+      // Close movies section
+      function closeCinemaMovies() {
+        selectedCinemaId = null;
+        document
+          .getElementById("cinemaMoviesSection")
+          .classList.remove("active");
+        document.querySelectorAll(".cinema-card").forEach((card) => {
+          card.classList.remove("active");
+        });
+      }
+
+      // Toast notification
+      function showToast(message, type = "info") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>

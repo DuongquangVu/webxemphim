@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lịch sử đặt vé - CinemaBooking</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/bookings.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo">
+          <i class="fas fa-film"></i>
+          <span>CinemaBooking</span>
+        </a>
+        <nav class="nav">
+          <a href="/" class="nav-link">Trang chủ</a>
+          <a href="/movies.html" class="nav-link">Phim</a>
+          <a href="/cinemas.html" class="nav-link">Rạp</a>
+        </nav>
+        <div class="user-menu" id="userMenu">
+          <span class="user-name" id="userName"></span>
+          <div class="dropdown">
+            <button class="dropdown-toggle">
+              <i class="fas fa-user-circle"></i>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a href="/profile.html"><i class="fas fa-user"></i> Tài khoản</a>
+              <a href="/bookings.html" class="active"
+                ><i class="fas fa-ticket-alt"></i> Lịch sử đặt vé</a
+              >
+              <a href="#" onclick="logout()"
+                ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="bookings-page">
+      <div class="bookings-container">
+        <div class="bookings-header">
+          <h1><i class="fas fa-ticket-alt"></i> Lịch Sử Đặt Vé</h1>
+          <p>Quản lý và theo dõi các vé đã đặt của bạn</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="bookings-filters">
+          <button class="filter-tab active" data-status="all">
+            Tất cả <span class="count" id="countAll">0</span>
+          </button>
+          <button class="filter-tab" data-status="confirmed">
+            Đã xác nhận <span class="count" id="countConfirmed">0</span>
+          </button>
+          <button class="filter-tab" data-status="pending">
+            Chờ thanh toán <span class="count" id="countPending">0</span>
+          </button>
+          <button class="filter-tab" data-status="cancelled">
+            Đã hủy <span class="count" id="countCancelled">0</span>
+          </button>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="bookings-list" id="bookingsList">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Đang tải...</p>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-bookings" id="emptyState" style="display: none">
+          <i class="fas fa-ticket-alt"></i>
+          <h3>Chưa có đặt vé nào</h3>
+          <p>Hãy đặt vé xem phim ngay!</p>
+          <a href="/" class="btn btn-primary">
+            <i class="fas fa-search"></i> Khám phá phim
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Booking Detail Modal -->
+    <div class="modal" id="bookingDetailModal">
+      <div
+        class="modal-overlay"
+        onclick="closeModal('bookingDetailModal')"
+      ></div>
+      <div class="modal-content booking-detail-modal">
+        <button class="modal-close" onclick="closeModal('bookingDetailModal')">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="booking-ticket" id="bookingDetailContent">
+          <!-- Content will be loaded dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal" id="reviewModal">
+      <div class="modal-overlay" onclick="closeModal('reviewModal')"></div>
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('reviewModal')">
+          <i class="fas fa-times"></i>
+        </button>
+        <h2><i class="fas fa-star"></i> Đánh Giá Phim</h2>
+        <form id="reviewForm">
+          <input type="hidden" id="reviewMovieId" />
+          <div class="form-group">
+            <label>Đánh giá của bạn</label>
+            <div class="star-rating" id="starRating">
+              <i class="fas fa-star" data-rating="2"></i>
+              <i class="fas fa-star" data-rating="4"></i>
+              <i class="fas fa-star" data-rating="6"></i>
+              <i class="fas fa-star" data-rating="8"></i>
+              <i class="fas fa-star" data-rating="10"></i>
+            </div>
+            <input type="hidden" id="ratingValue" value="10" />
+          </div>
+          <div class="form-group">
+            <label for="reviewComment">Nhận xét (tùy chọn)</label>
+            <textarea
+              id="reviewComment"
+              placeholder="Chia sẻ cảm nhận của bạn về bộ phim..."
+              rows="4"
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            <i class="fas fa-paper-plane"></i> Gửi đánh giá
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3><i class="fas fa-film"></i> CinemaBooking</h3>
+            <p>Hệ thống đặt vé xem phim trực tuyến</p>
+          </div>
+          <div class="footer-section">
+            <h4>Liên kết</h4>
+            <a href="/">Trang chủ</a>
+            <a href="/movies.html">Phim</a>
+            <a href="/cinemas.html">Rạp chiếu</a>
+          </div>
+          <div class="footer-section">
+            <h4>Hỗ trợ</h4>
+            <a href="#">Hướng dẫn đặt vé</a>
+            <a href="#">Chính sách hoàn vé</a>
+            <a href="#">Liên hệ</a>
+          </div>
+          <div class="footer-section">
+            <h4>Liên hệ</h4>
+            <p><i class="fas fa-phone"></i> 1900 1234</p>
+            <p><i class="fas fa-envelope"></i> support@cinemabooking.vn</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2024 CinemaBooking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/bookings.js"></script>
+  </body>
+</html>

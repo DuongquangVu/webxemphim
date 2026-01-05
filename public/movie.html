@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết phim - CinemaBooking</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/movie.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo">
+          <i class="fas fa-film"></i>
+          <span>CinemaBooking</span>
+        </a>
+        <nav class="nav">
+          <a href="/" class="nav-link">Trang chủ</a>
+          <a href="/movies.html" class="nav-link active">Phim</a>
+          <a href="/cinemas.html" class="nav-link">Rạp</a>
+        </nav>
+        <div class="auth-buttons" id="authButtons">
+          <button class="btn btn-outline" onclick="showLoginModal()">
+            Đăng nhập
+          </button>
+          <button class="btn btn-primary" onclick="showRegisterModal()">
+            Đăng ký
+          </button>
+        </div>
+        <div class="user-menu hidden" id="userMenu">
+          <span class="user-name" id="userName"></span>
+          <div class="dropdown">
+            <button class="dropdown-toggle">
+              <i class="fas fa-user-circle"></i>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a href="/profile.html"><i class="fas fa-user"></i> Tài khoản</a>
+              <a href="/bookings.html"
+                ><i class="fas fa-ticket-alt"></i> Lịch sử đặt vé</a
+              >
+              <a href="#" onclick="logout()"
+                ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Movie Detail -->
+    <main class="movie-detail-page">
+      <div class="container">
+        <div class="loading-spinner" id="movieLoading">
+          <div class="spinner"></div>
+          <p>Đang tải thông tin phim...</p>
+        </div>
+
+        <div id="movieContent" class="hidden">
+          <!-- Movie Info -->
+          <div class="movie-detail-hero">
+            <div class="movie-backdrop" id="movieBackdrop"></div>
+            <div class="movie-detail-content">
+              <div class="movie-poster-large" id="moviePoster">
+                <div class="movie-poster-placeholder">
+                  <i class="fas fa-film"></i>
+                </div>
+              </div>
+              <div class="movie-info">
+                <div class="movie-badges">
+                  <span class="movie-badge rating" id="movieRatingBadge">
+                    <i class="fas fa-star"></i> -
+                  </span>
+                  <span class="movie-badge" id="movieStatusBadge">-</span>
+                </div>
+                <h1 id="movieTitle">-</h1>
+                <div class="movie-meta">
+                  <span class="movie-meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="movieDuration">-</span> phút
+                  </span>
+                  <span class="movie-meta-item">
+                    <i class="fas fa-tag"></i>
+                    <span id="movieGenre">-</span>
+                  </span>
+                  <span class="movie-meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span id="movieReleaseDate">-</span>
+                  </span>
+                </div>
+                <p class="movie-description" id="movieDescription">-</p>
+                <div class="movie-stats">
+                  <div class="movie-stat">
+                    <span class="movie-stat-value">
+                      <i class="fas fa-star"></i>
+                      <span id="movieRating">-</span>
+                    </span>
+                    <span class="movie-stat-label">Đánh giá</span>
+                  </div>
+                  <div class="movie-stat">
+                    <span class="movie-stat-value" id="movieReviewCount"
+                      >0</span
+                    >
+                    <span class="movie-stat-label">Lượt đánh giá</span>
+                  </div>
+                </div>
+                <div
+                  class="movie-extra"
+                  style="margin-bottom: 20px; color: var(--text-secondary)"
+                >
+                  <p>
+                    <strong>Đạo diễn:</strong> <span id="movieDirector">-</span>
+                  </p>
+                  <p>
+                    <strong>Diễn viên:</strong> <span id="movieActors">-</span>
+                  </p>
+                </div>
+                <div class="movie-actions">
+                  <a
+                    href="#showtimes"
+                    class="btn btn-primary btn-lg"
+                    id="bookNowBtn"
+                  >
+                    <i class="fas fa-ticket-alt"></i> Đặt vé ngay
+                  </a>
+                  <button
+                    class="btn btn-trailer"
+                    id="trailerBtn"
+                    onclick="openTrailer()"
+                  >
+                    <i class="fas fa-play"></i> Xem trailer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Showtime Section -->
+          <section class="showtime-section" id="showtimes">
+            <div class="container">
+              <h2 class="section-title">
+                <i class="fas fa-ticket-alt"></i> Lịch Chiếu & Đặt Vé
+              </h2>
+
+              <!-- Date Tabs -->
+              <div class="date-tabs" id="dateList"></div>
+
+              <!-- Cinema Showtimes -->
+              <div class="cinema-showtimes" id="showtimesByCinema">
+                <p
+                  style="
+                    text-align: center;
+                    color: var(--text-muted);
+                    padding: 40px;
+                  "
+                >
+                  Vui lòng chọn ngày để xem suất chiếu
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Reviews Section -->
+          <section class="reviews-section">
+            <div class="container">
+              <h2 class="section-title">
+                <i class="fas fa-comments"></i> Đánh Giá & Bình Luận
+              </h2>
+              <div id="reviewsList">
+                <div class="loading-spinner">
+                  <div class="spinner"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+      <div class="modal-overlay" onclick="closeModal('loginModal')"></div>
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('loginModal')">
+          &times;
+        </button>
+        <h2>Đăng Nhập</h2>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Tên đăng nhập</label>
+            <input type="text" name="username" required />
+          </div>
+          <div class="form-group">
+            <label>Mật khẩu</label>
+            <input type="password" name="password" required />
+          </div>
+          <div class="form-error" id="loginError"></div>
+          <button type="submit" class="btn btn-primary btn-block">
+            Đăng Nhập
+          </button>
+        </form>
+        <p class="modal-footer-text">
+          Chưa có tài khoản?
+          <a href="#" onclick="showRegisterModal()">Đăng ký ngay</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+      <div class="modal-overlay" onclick="closeModal('registerModal')"></div>
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('registerModal')">
+          &times;
+        </button>
+        <h2>Đăng Ký</h2>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label>Tên đăng nhập</label>
+            <input type="text" name="username" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label>Họ tên</label>
+            <input type="text" name="full_name" />
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="tel" name="phone" />
+          </div>
+          <div class="form-group">
+            <label>Mật khẩu</label>
+            <input type="password" name="password" required minlength="6" />
+          </div>
+          <div class="form-error" id="registerError"></div>
+          <button type="submit" class="btn btn-primary btn-block">
+            Đăng Ký
+          </button>
+        </form>
+        <p class="modal-footer-text">
+          Đã có tài khoản? <a href="#" onclick="showLoginModal()">Đăng nhập</a>
+        </p>
+      </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/movie-detail.js"></script>
+  </body>
+</html>

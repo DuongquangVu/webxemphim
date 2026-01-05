@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đặt vé - CinemaBooking</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/booking.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo">
+          <i class="fas fa-film"></i>
+          <span>CinemaBooking</span>
+        </a>
+        <nav class="nav">
+          <a href="/" class="nav-link">Trang chủ</a>
+          <a href="/movies.html" class="nav-link">Phim</a>
+          <a href="/cinemas.html" class="nav-link">Rạp</a>
+        </nav>
+        <div class="user-menu" id="userMenu">
+          <span class="user-name" id="userName"></span>
+          <div class="dropdown">
+            <button class="dropdown-toggle">
+              <i class="fas fa-user-circle"></i>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a href="/profile.html"><i class="fas fa-user"></i> Tài khoản</a>
+              <a href="/bookings.html"><i class="fas fa-ticket-alt"></i> Lịch sử đặt vé</a>
+              <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Booking Page -->
+    <main class="booking-page">
+      <div class="loading-spinner" id="pageLoading">
+        <div class="spinner"></div>
+        <p>Đang tải thông tin...</p>
+      </div>
+
+      <div id="bookingContent" class="hidden">
+        <div class="booking-container">
+          <!-- Seat Map Section -->
+          <div class="seat-map-section">
+            <div class="seat-map-header">
+              <h2><i class="fas fa-chair"></i> Chọn Ghế Ngồi</h2>
+              <div class="showtime-info">
+                <span><i class="fas fa-calendar"></i> <span id="bookingDate">-</span></span>
+                <span><i class="fas fa-clock"></i> <span id="bookingTime">-</span></span>
+                <span><i class="fas fa-door-open"></i> <span id="bookingRoom">-</span></span>
+              </div>
+            </div>
+
+            <!-- Screen -->
+            <div class="screen-container">
+              <div class="screen"></div>
+              <span class="screen-label">Màn hình</span>
+            </div>
+
+            <!-- Seat Map -->
+            <div class="seat-map" id="seatMap">
+              <div class="loading-spinner">
+                <div class="spinner"></div>
+              </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="seat-legend">
+              <div class="legend-item">
+                <div class="legend-seat available"></div>
+                <span class="legend-label">Ghế trống</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-seat selected"></div>
+                <span class="legend-label">Đang chọn</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-seat booked"></div>
+                <span class="legend-label">Đã đặt</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-seat vip"></div>
+                <span class="legend-label">Ghế VIP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Booking Summary Sidebar -->
+          <div class="booking-summary" id="bookingSummary">
+            <h3><i class="fas fa-receipt"></i> Thông Tin Đặt Vé</h3>
+            
+            <!-- Movie Info -->
+            <div class="summary-movie">
+              <img id="moviePosterMini" src="" alt="" />
+              <div class="summary-movie-info">
+                <h4 id="bookingMovieTitle">-</h4>
+                <p><i class="fas fa-building"></i> <span id="bookingCinema">-</span></p>
+              </div>
+            </div>
+
+            <!-- Timer Warning -->
+            <div class="booking-timer hidden" id="countdown">
+              <i class="fas fa-clock"></i>
+              <span>Thời gian còn: <strong id="countdownTimer">10:00</strong></span>
+            </div>
+
+            <!-- Selected Seats -->
+            <div class="selected-seats">
+              <h4>Ghế đã chọn</h4>
+              <div class="seats-display" id="selectedSeatsDisplay">
+                <span class="no-seats">Chưa chọn ghế</span>
+              </div>
+            </div>
+
+            <!-- Price Breakdown -->
+            <div class="price-breakdown">
+              <div class="price-row">
+                <span>Số lượng vé:</span>
+                <span id="ticketCount">0</span>
+              </div>
+              <div class="price-row total">
+                <span>Tổng tiền:</span>
+                <span class="price" id="totalAmount">0 ₫</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="booking-actions">
+              <button
+                class="btn btn-primary btn-book"
+                id="bookingBtn"
+                onclick="proceedToPayment()"
+                disabled
+              >
+                <i class="fas fa-credit-card"></i> Tiến hành thanh toán
+              </button>
+              <a href="javascript:history.back()" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Quay lại
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+              disabled
+            >
+              <i class="fas fa-credit-card"></i> Tiến hành thanh toán
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+      <div class="modal-overlay" onclick="closeModal('paymentModal')"></div>
+      <div class="modal-content modal-lg">
+        <button class="modal-close" onclick="closeModal('paymentModal')">
+          <i class="fas fa-times"></i>
+        </button>
+        <h2><i class="fas fa-credit-card"></i> Thanh Toán</h2>
+
+        <div class="payment-section">
+          <h4>Chi tiết đơn hàng</h4>
+          <div id="paymentMovieInfo"></div>
+          <div id="paymentSeats"></div>
+          <div class="price-row total">
+            <span>Tổng tiền:</span>
+            <span class="price" id="paymentTotal">0 ₫</span>
+          </div>
+        </div>
+
+        <div class="payment-methods">
+          <h4 style="margin-bottom: 15px; color: var(--text-secondary);">Chọn phương thức thanh toán</h4>
+          <label class="payment-method selected">
+            <input type="radio" name="paymentMethod" value="cash" checked />
+            <i class="fas fa-store"></i>
+            <div class="payment-method-info">
+              <span>Thanh toán tại quầy</span>
+              <small>Giữ ghế 30 phút - Thanh toán khi lấy vé</small>
+            </div>
+          </label>
+          <label class="payment-method">
+            <input type="radio" name="paymentMethod" value="credit_card" />
+            <i class="fas fa-credit-card"></i>
+            <div class="payment-method-info">
+              <span>Thẻ tín dụng/ghi nợ</span>
+              <small>Thanh toán ngay - Visa, MasterCard, JCB</small>
+            </div>
+          </label>
+          <label class="payment-method">
+            <input type="radio" name="paymentMethod" value="e_wallet" />
+            <i class="fas fa-wallet"></i>
+            <div class="payment-method-info">
+              <span>Ví điện tử</span>
+              <small>MoMo, ZaloPay, VNPay</small>
+            </div>
+          </label>
+          <label class="payment-method">
+            <input type="radio" name="paymentMethod" value="bank_transfer" />
+            <i class="fas fa-university"></i>
+            <div class="payment-method-info">
+              <span>Chuyển khoản ngân hàng</span>
+              <small>QR Code / Internet Banking</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-error" id="paymentError"></div>
+
+        <button
+          class="btn btn-primary btn-lg"
+          id="confirmPaymentBtn"
+          onclick="confirmPayment()"
+          style="width: 100%; margin-top: 20px;"
+        >
+          <i class="fas fa-check-circle"></i> Xác nhận đặt vé
+        </button>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <div class="confirmation-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Đặt Vé Thành Công!</h2>
+        <p>Mã đặt vé của bạn:</p>
+        <div class="booking-code" id="bookingCode">-</div>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">
+          Vui lòng xuất trình mã này tại quầy để nhận vé
+        </p>
+        <div class="confirmation-actions">
+          <a href="/bookings.html" class="btn btn-primary">
+            <i class="fas fa-ticket-alt"></i> Xem lịch sử đặt vé
+          </a>
+          <a href="/" class="btn btn-outline">
+            <i class="fas fa-home"></i> Về trang chủ
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-bottom">
+          <p>&copy; 2024 CinemaBooking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/booking.js"></script>
+  </body>
+</html>

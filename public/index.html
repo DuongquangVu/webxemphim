@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CinemaBooking - Đặt Vé Xem Phim Online</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo">
+          <i class="fas fa-film"></i>
+          <span>CinemaBooking</span>
+        </a>
+        <nav class="nav">
+          <a href="/" class="nav-link active">Trang chủ</a>
+          <a href="/movies.html" class="nav-link">Phim</a>
+          <a href="/cinemas.html" class="nav-link">Rạp</a>
+        </nav>
+        <div class="auth-buttons" id="authButtons">
+          <button class="btn btn-outline" onclick="showLoginModal()">
+            Đăng nhập
+          </button>
+          <button class="btn btn-primary" onclick="showRegisterModal()">
+            Đăng ký
+          </button>
+        </div>
+        <div class="user-menu hidden" id="userMenu">
+          <span class="user-name" id="userName"></span>
+          <div class="dropdown">
+            <button class="dropdown-toggle">
+              <i class="fas fa-user-circle"></i>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a href="/profile.html"><i class="fas fa-user"></i> Tài khoản</a>
+              <a href="/bookings.html"
+                ><i class="fas fa-ticket-alt"></i> Lịch sử đặt vé</a
+              >
+              <a href="#" onclick="logout()"
+                ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-slideshow" id="heroSlideshow">
+        <!-- Default slide - will be replaced by JS -->
+        <div
+          class="hero-slide active"
+          style="background-image: url('/images/bg-spiderman.jpg')"
+        ></div>
+      </div>
+      <div class="hero-content" id="heroContent">
+        <h1 class="hero-title" id="heroTitle">
+          Trải Nghiệm Điện Ảnh <span class="text-accent">Đỉnh Cao</span>
+        </h1>
+        <p class="hero-subtitle" id="heroSubtitle">
+          Đặt vé nhanh chóng - Chọn ghế yêu thích - Thanh toán tiện lợi
+        </p>
+        <div class="hero-buttons" id="heroButtons">
+          <a href="#now-showing" class="btn btn-primary btn-lg">
+            <i class="fas fa-play-circle"></i> Xem Phim Đang Chiếu
+          </a>
+          <a
+            href="/movies.html?status=coming_soon"
+            class="btn btn-outline btn-lg"
+          >
+            <i class="fas fa-calendar"></i> Phim Sắp Chiếu
+          </a>
+        </div>
+      </div>
+      <div class="hero-indicators" id="heroIndicators">
+        <!-- Indicators sẽ được load từ JS -->
+      </div>
+    </section>
+
+    <!-- Now Showing Section -->
+    <section id="now-showing" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-fire"></i> Phim Đang Chiếu
+          </h2>
+          <a href="/movies.html" class="view-all"
+            >Xem tất cả <i class="fas fa-arrow-right"></i
+          ></a>
+        </div>
+        <div class="movies-grid" id="nowShowingMovies">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Đang tải...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Coming Soon Section -->
+    <section class="section bg-secondary">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-clock"></i> Phim Sắp Chiếu
+          </h2>
+          <a href="/movies.html?status=coming_soon" class="view-all"
+            >Xem tất cả <i class="fas fa-arrow-right"></i
+          ></a>
+        </div>
+        <div class="movies-grid" id="comingSoonMovies">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Đang tải...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cinemas Section -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-building"></i> Hệ Thống Rạp
+          </h2>
+          <a href="/cinemas.html" class="view-all"
+            >Xem tất cả <i class="fas fa-arrow-right"></i
+          ></a>
+        </div>
+        <div class="cinemas-grid" id="cinemasList">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Đang tải...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3><i class="fas fa-film"></i> CinemaBooking</h3>
+            <p>Hệ thống đặt vé xem phim trực tuyến</p>
+          </div>
+          <div class="footer-section">
+            <h4>Liên kết</h4>
+            <a href="/">Trang chủ</a>
+            <a href="/movies.html">Phim</a>
+            <a href="/cinemas.html">Rạp chiếu</a>
+          </div>
+          <div class="footer-section">
+            <h4>Hỗ trợ</h4>
+            <a href="#">Hướng dẫn đặt vé</a>
+            <a href="#">Chính sách hoàn vé</a>
+            <a href="#">Liên hệ</a>
+          </div>
+          <div class="footer-section">
+            <h4>Liên hệ</h4>
+            <p><i class="fas fa-phone"></i> 1900 1234</p>
+            <p><i class="fas fa-envelope"></i> support@cinemabooking.vn</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2024 CinemaBooking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+      <div class="modal-overlay" onclick="closeModal('loginModal')"></div>
+      <div class="modal-content auth-modal">
+        <button class="modal-close" onclick="closeModal('loginModal')">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="auth-header">
+          <div class="auth-icon">
+            <i class="fas fa-user-circle"></i>
+          </div>
+          <h2>Chào mừng trở lại!</h2>
+          <p>Đăng nhập để đặt vé xem phim</p>
+        </div>
+        <form id="loginForm" onsubmit="handleLogin(event)" class="auth-form">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> Tên đăng nhập</label>
+            <input
+              type="text"
+              name="username"
+              required
+              placeholder="Nhập tên đăng nhập"
+              autocomplete="username"
+            />
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Mật khẩu</label>
+            <div class="password-input">
+              <input
+                type="password"
+                name="password"
+                id="loginPassword"
+                required
+                placeholder="Nhập mật khẩu"
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                onclick="togglePassword('loginPassword')"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-error" id="loginError"></div>
+          <button type="submit" class="btn btn-primary btn-block btn-auth">
+            <i class="fas fa-sign-in-alt"></i> Đăng Nhập
+          </button>
+        </form>
+        <div class="auth-footer">
+          <p>
+            Chưa có tài khoản?
+            <a href="#" onclick="switchToRegister()">Đăng ký ngay</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+      <div class="modal-overlay" onclick="closeModal('registerModal')"></div>
+      <div class="modal-content auth-modal">
+        <button class="modal-close" onclick="closeModal('registerModal')">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="auth-header">
+          <div class="auth-icon register">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h2>Tạo tài khoản mới</h2>
+          <p>Đăng ký để trải nghiệm dịch vụ</p>
+        </div>
+        <form
+          id="registerForm"
+          onsubmit="handleRegister(event)"
+          class="auth-form"
+        >
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> Tên đăng nhập</label>
+              <input
+                type="text"
+                name="username"
+                required
+                placeholder="Nhập tên đăng nhập"
+              />
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-envelope"></i> Email</label>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="Nhập email"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fas fa-id-card"></i> Họ tên</label>
+              <input type="text" name="full_name" placeholder="Nhập họ tên" />
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-phone"></i> Số điện thoại</label>
+              <input type="tel" name="phone" placeholder="Nhập số điện thoại" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Mật khẩu</label>
+            <div class="password-input">
+              <input
+                type="password"
+                name="password"
+                id="registerPassword"
+                required
+                placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
+                minlength="6"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                onclick="togglePassword('registerPassword')"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-error" id="registerError"></div>
+          <button type="submit" class="btn btn-primary btn-block btn-auth">
+            <i class="fas fa-user-plus"></i> Đăng Ký
+          </button>
+        </form>
+        <div class="auth-footer">
+          <p>
+            Đã có tài khoản? <a href="#" onclick="switchToLogin()">Đăng nhập</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/main.js"></script>
+  </body>
+</html>

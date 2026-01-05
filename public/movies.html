@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danh Sách Phim - CinemaBooking</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Movies Page Specific Styles */
+      .movies-page {
+        padding: 40px 0;
+        min-height: calc(100vh - 70px);
+      }
+
+      .search-section {
+        background: var(--bg-secondary);
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 40px;
+        border: 1px solid var(--border-color);
+      }
+
+      .search-form {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .search-input-group {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+      }
+
+      .search-input-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 14px 14px 14px 45px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+      }
+
+      .search-input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      .filter-btn {
+        padding: 12px 24px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .filter-btn:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+      }
+
+      .filter-btn.active {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+      }
+
+      .movies-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 25px;
+      }
+
+      .movie-card {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+      }
+
+      .movie-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--accent-color);
+        box-shadow: 0 15px 40px rgba(56, 189, 248, 0.2);
+      }
+
+      .movie-poster {
+        position: relative;
+        height: 320px;
+        overflow: hidden;
+      }
+
+      .movie-poster img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .movie-card:hover .movie-poster img {
+        transform: scale(1.05);
+      }
+
+      .movie-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.9) 0%,
+          rgba(0, 0, 0, 0) 60%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .movie-card:hover .movie-overlay {
+        opacity: 1;
+      }
+
+      .movie-overlay .btn {
+        width: 100%;
+      }
+
+      .movie-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .movie-badge.now-showing {
+        background: var(--success-color);
+        color: white;
+      }
+
+      .movie-badge.coming-soon {
+        background: var(--warning-color);
+        color: #1a1a1a;
+      }
+
+      .movie-rating {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 5px 10px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .movie-rating i {
+        color: #fbbf24;
+      }
+
+      .movie-rating span {
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .movie-info {
+        padding: 15px;
+      }
+
+      .movie-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .movie-meta {
+        display: flex;
+        gap: 15px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      .movie-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+        grid-column: 1 / -1;
+      }
+
+      .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+      }
+
+      .empty-state h3 {
+        font-size: 1.3rem;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+      }
+
+      /* Loading */
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 60px;
+        grid-column: 1 / -1;
+      }
+
+      .loading-spinner i {
+        font-size: 2rem;
+        color: var(--accent-color);
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .search-form {
+          flex-direction: column;
+        }
+
+        .search-input-group {
+          min-width: 100%;
+        }
+
+        .filter-group {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .movies-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+        }
+
+        .movie-poster {
+          height: 250px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo">
+          <i class="fas fa-film"></i>
+          <span>CinemaBooking</span>
+        </a>
+        <nav class="nav">
+          <a href="/" class="nav-link">Trang chủ</a>
+          <a href="/movies.html" class="nav-link active">Phim</a>
+          <a href="/cinemas.html" class="nav-link">Rạp</a>
+        </nav>
+        <div class="auth-buttons" id="authButtons">
+          <button class="btn btn-outline" onclick="showLoginModal()">
+            Đăng nhập
+          </button>
+          <button class="btn btn-primary" onclick="showRegisterModal()">
+            Đăng ký
+          </button>
+        </div>
+        <div class="user-menu hidden" id="userMenu">
+          <span class="user-name" id="userName"></span>
+          <div class="dropdown">
+            <button class="dropdown-toggle">
+              <i class="fas fa-user-circle"></i>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a href="/profile.html"><i class="fas fa-user"></i> Tài khoản</a>
+              <a href="/bookings.html"
+                ><i class="fas fa-ticket-alt"></i> Lịch sử đặt vé</a
+              >
+              <a href="#" onclick="logout()"
+                ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="movies-page">
+      <div class="container">
+        <!-- Page Title -->
+        <div class="section-header" style="margin-bottom: 30px">
+          <h1 class="section-title">
+            <i class="fas fa-film"></i> Danh Sách Phim
+          </h1>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+          <div class="search-form">
+            <div class="search-input-group">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Tìm kiếm phim theo tên, thể loại, đạo diễn..."
+              />
+            </div>
+            <div class="filter-group">
+              <button class="filter-btn active" data-status="">Tất cả</button>
+              <button class="filter-btn" data-status="now_showing">
+                Đang chiếu
+              </button>
+              <button class="filter-btn" data-status="coming_soon">
+                Sắp chiếu
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Movies Grid -->
+        <div id="moviesGrid" class="movies-grid">
+          <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3><i class="fas fa-film"></i> CinemaBooking</h3>
+            <p>Hệ thống đặt vé xem phim trực tuyến hàng đầu Việt Nam</p>
+          </div>
+          <div class="footer-section">
+            <h4>Liên kết</h4>
+            <a href="/">Trang chủ</a>
+            <a href="/movies.html">Phim</a>
+            <a href="/cinemas.html">Rạp</a>
+          </div>
+          <div class="footer-section">
+            <h4>Hỗ trợ</h4>
+            <a href="#">FAQ</a>
+            <a href="#">Liên hệ</a>
+            <a href="#">Điều khoản</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 CinemaBooking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-sign-in-alt"></i> Đăng Nhập</h2>
+          <button class="modal-close" onclick="closeModal('loginModal')">
+            &times;
+          </button>
+        </div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              required
+              placeholder="Nhập email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Mật khẩu</label>
+            <input
+              type="password"
+              id="loginPassword"
+              required
+              placeholder="Nhập mật khẩu"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            Đăng Nhập
+          </button>
+        </form>
+        <p class="modal-footer-text">
+          Chưa có tài khoản?
+          <a href="#" onclick="switchModal('loginModal', 'registerModal')"
+            >Đăng ký ngay</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-user-plus"></i> Đăng Ký</h2>
+          <button class="modal-close" onclick="closeModal('registerModal')">
+            &times;
+          </button>
+        </div>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label for="registerName">Họ tên</label>
+            <input
+              type="text"
+              id="registerName"
+              required
+              placeholder="Nhập họ tên"
+            />
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">Email</label>
+            <input
+              type="email"
+              id="registerEmail"
+              required
+              placeholder="Nhập email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="registerPhone">Số điện thoại</label>
+            <input
+              type="tel"
+              id="registerPhone"
+              required
+              placeholder="Nhập số điện thoại"
+            />
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Mật khẩu</label>
+            <input
+              type="password"
+              id="registerPassword"
+              required
+              minlength="6"
+              placeholder="Nhập mật khẩu"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            Đăng Ký
+          </button>
+        </form>
+        <p class="modal-footer-text">
+          Đã có tài khoản?
+          <a href="#" onclick="switchModal('registerModal', 'loginModal')"
+            >Đăng nhập</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+      // Global variables
+      let allMovies = [];
+      let currentStatus = "";
+      let searchTimeout;
+
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", () => {
+        updateAuthUI();
+
+        // Check URL params for status filter
+        const urlParams = new URLSearchParams(window.location.search);
+        const statusParam = urlParams.get("status");
+        if (statusParam) {
+          currentStatus = statusParam;
+          document.querySelectorAll(".filter-btn").forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.status === statusParam);
+          });
+        }
+
+        loadMovies();
+        setupSearch();
+        setupFilters();
+      });
+
+      // Load all movies
+      async function loadMovies() {
+        try {
+          const response = await MoviesAPI.getAll(1, 100, currentStatus);
+          if (response.success) {
+            allMovies = response.data;
+            renderMovies(allMovies);
+          }
+        } catch (error) {
+          console.error("Error loading movies:", error);
+          showToast("Không thể tải danh sách phim!", "error");
+        }
+      }
+
+      // Render movies
+      function renderMovies(movies) {
+        const grid = document.getElementById("moviesGrid");
+
+        if (movies.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-film"></i>
+              <h3>Không tìm thấy phim</h3>
+              <p>Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = movies
+          .map(
+            (movie) => `
+          <div class="movie-card" onclick="goToMovie(${movie.id})">
+            <div class="movie-poster">
+              <img src="${movie.poster_url || "/images/no-poster.jpg"}" 
+                   alt="${movie.title}"
+                   onerror="this.src='/images/no-poster.jpg'">
+              <span class="movie-badge ${
+                movie.status === "now_showing" ? "now-showing" : "coming-soon"
+              }">
+                ${movie.status === "now_showing" ? "Đang chiếu" : "Sắp chiếu"}
+              </span>
+              <div class="movie-rating">
+                <i class="fas fa-star"></i>
+                <span>${movie.rating || "N/A"}</span>
+              </div>
+              <div class="movie-overlay">
+                <button class="btn btn-primary">
+                  <i class="fas fa-ticket-alt"></i> Đặt Vé
+                </button>
+              </div>
+            </div>
+            <div class="movie-info">
+              <h3 class="movie-title" title="${movie.title}">${movie.title}</h3>
+              <div class="movie-meta">
+                <span><i class="fas fa-clock"></i> ${movie.duration} phút</span>
+                <span><i class="fas fa-tags"></i> ${movie.genre || "N/A"}</span>
+              </div>
+            </div>
+          </div>
+        `
+          )
+          .join("");
+      }
+
+      // Setup search
+      function setupSearch() {
+        const searchInput = document.getElementById("searchInput");
+
+        searchInput.addEventListener("input", (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            filterMovies();
+          }, 300);
+        });
+      }
+
+      // Setup filters
+      function setupFilters() {
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            // Update active state
+            document
+              .querySelectorAll(".filter-btn")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // Update status and reload
+            currentStatus = btn.dataset.status;
+            loadMovies();
+          });
+        });
+      }
+
+      // Filter movies by search term
+      function filterMovies() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+
+        if (!searchTerm) {
+          renderMovies(allMovies);
+          return;
+        }
+
+        const filtered = allMovies.filter(
+          (movie) =>
+            movie.title.toLowerCase().includes(searchTerm) ||
+            (movie.genre && movie.genre.toLowerCase().includes(searchTerm)) ||
+            (movie.director &&
+              movie.director.toLowerCase().includes(searchTerm)) ||
+            (movie.actors && movie.actors.toLowerCase().includes(searchTerm))
+        );
+
+        renderMovies(filtered);
+      }
+
+      // Go to movie detail
+      function goToMovie(movieId) {
+        window.location.href = `/movie.html?id=${movieId}`;
+      }
+
+      // Toast notification
+      function showToast(message, type = "info") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>
